@@ -1,0 +1,6 @@
+{
+    "name": "Smartmi smart heater",
+    "domains": ["climate"],
+    "render_readme": true,
+    "homeassistant": "0.99.9"
+  }
