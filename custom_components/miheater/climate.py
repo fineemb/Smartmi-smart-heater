@@ -1,5 +1,6 @@
 """
     Support for Xiaomi wifi-enabled home heaters via miio.
+    author: sunfang1cn@gmail.com
 """
 import logging
 import enum
@@ -8,7 +9,7 @@ import asyncio
 
 from homeassistant.components.climate import ClimateDevice, PLATFORM_SCHEMA
 from homeassistant.components.climate.const import (
-    DOMAIN, HVAC_MODE_HEAT, HVAC_MODE_COOL, HVAC_MODE_OFF,
+    DOMAIN, ATTR_HVAC_MODE, HVAC_MODE_HEAT, HVAC_MODE_COOL, HVAC_MODE_OFF,
     SUPPORT_TARGET_TEMPERATURE)
 from homeassistant.const import (
     ATTR_TEMPERATURE, CONF_HOST, CONF_NAME, CONF_TOKEN,
@@ -88,10 +89,12 @@ class MiHeater(ClimateDevice):
         """Initialize the heater."""
         self._device = device
         self._name = name
-        self._state = None
+        self._state_attrs = {}
+        self._target_temperature = 0
+        self._current_temperature = 0
+        self._power = None
         self._hvac_mode = None
         self.entity_id = generate_entity_id('climate.{}', unique_id, hass=_hass)
-        self.getAttrData()
 
     @property
     def name(self):
@@ -114,49 +117,61 @@ class MiHeater(ClimateDevice):
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
-        return self._state['target_temperature'][0]
+        return self._target_temperature
 
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return self._state['current_temperature'][0]
+        return self._current_temperature
 
     @property
     def hvac_modes(self):
         """Return the list of available hvac modes."""
         return [mode.value for mode in OperationMode]
+        
+    @property
+    def hvac_mode(self):
+        """Return hvac mode ie. heat, cool, fan only."""
+        return self._hvac_mode
 
     @property
     def target_temperature_step(self):
         """Return the supported step of target temperature."""
         return 1
-    def getAttrData(self):
+    def update(self):
         try:
             data = {}
-            data['power'] = self._device.send('get_prop', ['power'])
-            data['humidity'] = self._device.send('get_prop', ['relative_humidity'])
-            data['target_temperature'] = self._device.send('get_prop', ['target_temperature'])
-            data['current_temperature'] = self._device.send('get_prop', ['temperature'])
-            self._state = data
+            power = self._device.send('get_prop', ['power'])[0]
+            humidity = self._device.send('get_prop', ['relative_humidity'])[0]
+            target_temperature = self._device.send('get_prop', ['target_temperature'])[0]
+            current_temperature = self._device.send('get_prop', ['temperature'])[0]
+            if power == 'off':
+                self._hvac_mode = 'off'
+            else:
+                self._hvac_mode = "heat"
+            self._target_temperature = current_temperature != 16
+            self._current_temperature = current_temperature != 16
+            self._power = power != "off"
+            self._state_attrs.update({
+                ATTR_HVAC_MODE: power if power == "off"  else "heat",
+                "power": power,
+                "humidity": humidity,
+                ATTR_TEMPERATURE:target_temperature,
+                "current_temperature":current_temperature
+            })
         except DeviceException:
             _LOGGER.exception('Fail to get_prop from Xiaomi heater')
-            self._state = None
             raise PlatformNotReady
 
     @property
     def device_state_attributes(self):
-        return self._state
-
-    @property
-    def hvac_mode(self):
-        """Return hvac mode ie. heat, cool, fan only."""
-        return OperationMode.Off.value if self._state['power'][0] == 'off' else OperationMode.Heat.value
-        # return self._state['power'][0]
+        """Return the state attributes of the device."""
+        return self._state_attrs
 
     @property
     def is_on(self):
         """Return true if heater is on."""
-        return self._state['power'][0] == 'on'
+        return self._power == 'on'
 
     @property
     def min_temp(self):
@@ -171,7 +186,7 @@ class MiHeater(ClimateDevice):
     @property
     def current_operation(self):
         """Return current operation."""
-        return OperationMode.Off.value if self._state['power'][0] == 'off' else OperationMode.Heat.value
+        return OperationMode.Off.value if self._power == 'off' else OperationMode.Heat.value
 
     @property
     def operation_list(self):
