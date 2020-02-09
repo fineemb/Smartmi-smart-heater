@@ -3,5 +3,5 @@
     "domains": ["climate"],
     "render_readme": true,
     "homeassistant": "0.99.9",
-    "country": ["US", "CN"]
+    "country": ["CN"]
   }
