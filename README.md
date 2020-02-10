@@ -4,7 +4,7 @@
  * @Description   : 
  * @Date          : 2019-12-19 22:01:59
  * @LastEditors   : fineemb
- * @LastEditTime  : 2020-02-03 12:16:46
+ * @LastEditTime  : 2020-02-10 19:37:10
  -->
 # Smartmi Smart Heater
 
@@ -38,6 +38,10 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 * Services
   - set_hvac_mode
   - set_temperature
+  - xiaomi_heater_set_buzzer
+  - xiaomi_heater_set_brightness
+  - xiaomi_heater_set_poweroff_time
+
 
 ## Setup
 
@@ -76,3 +80,42 @@ Set the temperature of heater.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific heater.     |
 | `temperature`             | yes      | Set the temperature of heater.   |
+
+## Update
+
+#### `climate.xiaomi_heater_set_buzzer`
+
+设置蜂鸣器开关
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific heater.     |
+| `buzzer`             | yes      | 设置蜂鸣器开关 off 或者 on   |
+
+
+#### `climate.xiaomi_heater_set_brightness`
+
+设置面板亮度
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific heater.     |
+| `brightness`             | yes      | 设置面板亮度,分别可以是0,1,2   |
+
+#### `climate.xiaomi_heater_set_poweroff_time`
+
+定时关闭
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific heater.     |
+| `buzzer`             | yes      | 延迟关闭的时间, 单位为分钟   |
+
+#### `climate.xiaomi_heater_set_child_lock`
+
+设置童锁
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific heater.     |
+| `buzzer`             | yes      | 设置儿童锁开关 off 或者 on   |
