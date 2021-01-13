@@ -277,7 +277,7 @@ class MiHeater(ClimateDevice):
 
     @asyncio.coroutine
     def async_set_poweroff_time(self, **kwargs):
-        """Set new led brightness."""
+        """Set Power off time."""
         poweroff_time = kwargs.get(CONF_POWEROFF_TIME)
         if poweroff_time is None:
             return
@@ -285,7 +285,7 @@ class MiHeater(ClimateDevice):
 
     @asyncio.coroutine
     def async_set_child_lock(self, **kwargs):
-        """Set new led brightness."""
+        """Set child lock."""
         child_lock = kwargs.get(CONF_CHILD_LOCK)
         if child_lock is None:
             return
@@ -293,7 +293,7 @@ class MiHeater(ClimateDevice):
 
     @asyncio.coroutine
     def async_set_buzzer(self, **kwargs):
-        """Set new led brightness."""
+        """Set buzzer."""
         buzzer = kwargs.get(CONF_BUZZER)
         if buzzer is None:
             return
