@@ -1,6 +1,7 @@
 {
   "domain": "miheater",
   "name": "Smartmi Smart Heater",
+  "version": "1.0.0",
   "documentation": "https://github.com/fineemb/Smartmi-smart-heater",
   "requirements": [
     "construct==2.9.45",
